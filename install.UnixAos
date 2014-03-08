@@ -1,0 +1,41 @@
+#!/bin/bash
+if [ $# \!= 1 ] ; then
+	echo usage: $0 archivefile
+	exit
+fi
+aosdir=/usr/aos
+aoscmd=/usr/bin/aos
+if [ `uname -s` == SunOS  ] ; then bootenv=aos.solaris ; fi
+if [ `uname -s` == Linux  ] ; then bootenv=aos.linux   ; fi
+if [ `uname -s` == Darwin ] ; then bootenv=aos.darwin  ; fi
+
+echo -n "Installation directory for UnixAos system [default:${aosdir}] :"
+read a
+if ! [ -z $a ] ; then aosdir=$a ; fi
+
+echo -n "Start command for UnixAos [default:${aoscmd}] :"
+read a
+if ! [ -z $a ] ; then aoscmd=$a ; fi
+
+if ! [ -d ${aosdir} ] ; then
+	mkdir ${aosdir} || exit 1
+else
+	echo "${aosdir} already exists."
+	echo -n "may I remove the old contents [y/n]"
+	read a
+	if [ "$a" \!= "y" ] ; then exit 1 ; fi
+	rm -rf ${aosdir}/*
+fi
+
+cat $1 | gunzip | (cd ${aosdir} && tar xvf -)	
+
+chown -R root ${aosdir}
+chgrp -R sys ${aosdir}
+
+cat ${aosdir}/system/aos.templ | \
+	sed -e "s,AOS_HOME,${aosdir}," | \
+	sed -e "s,BOOT_ENV,${bootenv}," >${aoscmd}
+
+chmod +x ${aoscmd}
+
+# <EOF>
