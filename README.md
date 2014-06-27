@@ -12,7 +12,7 @@ Installation:
       chmod +x install.UnixAos
       install.UnixAos  LinuxA2[n].tar.gz
 
-System Sources:
+Building From Source:
 ---------------
 
 The system sources are kept in a subversion repository at ETHZ which is mirrored at https://github.com/harrisonpartch/ethzoberonmirror
